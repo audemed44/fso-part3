@@ -14,24 +14,6 @@ app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
 
-// let persons = [
-//   {
-//     name: "aakash2",
-//     number: "1245",
-//     id: 1
-//   },
-//   {
-//     name: "aa",
-//     number: "123",
-//     id: 2
-//   },
-//   {
-//     id: 3,
-//     name: "add",
-//     number: "47"
-//   }
-// ];
-
 app.get("/info", (req, res) => {
   Person.countDocuments({}).exec((err, count) => {
     if (err) {
@@ -42,14 +24,14 @@ app.get("/info", (req, res) => {
   });
 });
 
-app.get("/api/persons", (req, res) => {
+app.get("/api/persons", (req, res, next) => {
   Person.find({})
     .then(people => {
       res.json(people.map(person => person.toJSON()));
     })
     .catch(error => next(error));
 });
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res, next) => {
   Person.findById(req.params.id)
     .then(person => {
       console.log(person);
@@ -61,17 +43,13 @@ app.get("/api/persons/:id", (req, res) => {
       next(error);
     });
 });
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
     .then(result => {
       res.status(204).end();
     })
     .catch(error => next(error));
 });
-
-const generateId = () => {
-  return Math.floor(Math.random() * 10000);
-};
 
 app.post("/api/persons", (req, res, next) => {
   const body = req.body;
@@ -87,8 +65,6 @@ app.post("/api/persons", (req, res, next) => {
     });
   }
 
-  // if (persons.find(person => person.name === body.name))
-  //   return res.status(400).json({ error: "name must be unique" });
   const person = new Person({
     name: body.name,
     number: body.number
@@ -122,7 +98,6 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
 
-// handler of requests with unknown endpoint
 app.use(unknownEndpoint);
 
 const errorHandler = (error, request, response, next) => {
@@ -132,7 +107,6 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
-// handler of requests with result to errors
 app.use(errorHandler);
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

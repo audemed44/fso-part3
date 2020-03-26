@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-var uniqueValidator = require("mongoose-unique-validator");
+const uniqueValidator = require("mongoose-unique-validator");
 require("dotenv").config();
 
 const url = process.env.MONGODB_URI;
@@ -15,8 +15,6 @@ mongoose
   })
   .then(console.log("connected to mongoDB"))
   .catch(error => console.log("error connecting to mongoDB: ", error.message));
-
-//mongoose.set("useFindAndModify", false);
 
 const personSchema = new mongoose.Schema({
   name: {
